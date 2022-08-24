@@ -6,28 +6,28 @@
 #include "./message.h"
 
 typedef struct{
-    //specs
-    int sock;
-    pthread_t thread;
-    uint64 selfID;
-    uint64 otherID;
-    uint32 maxSize;
-    uint64 fileLength;
-    uchar8* file;
-    //flags
-    uint8 data;
-    uint8 kill;
-    uint8 ready;
-    //shared_data
-    MSG* value;
+  //specs
+  int sock;
+  pthread_t thread;
+  uint64 selfID;
+  uint64 otherID;
+  uint32 maxSize;
+  uint64 fileLength;
+  uchar8* file;
+  //flags
+  uint8 data;
+  uint8 kill;
+  uint8 ready;
+  //shared_data
+  MSG* value;
 } channel_t;
 
 typedef struct{
-    int sock;
-    struct sockaddr address;
-    socklen_t addrLen;
-    uint64 numChans;
-    channel_t** chans;
+  int sock;
+  struct sockaddr address;
+  socklen_t addrLen;
+  uint64 numChans;
+  channel_t** chans;
 } connection_t;
 
 //connection functions

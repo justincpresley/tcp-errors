@@ -4,13 +4,13 @@
 #include "./stdtypes.h"
 
 typedef struct{
-    uint64 lowBound;
-    uint64 highBound;
+  uint64 lowBound;
+  uint64 highBound;
 } piece_t;
 
 typedef struct{
-    uint64 numPieces;
-    piece_t** pieces;
+  uint64 numPieces;
+  piece_t** pieces;
 } section_t;
 
 extern section_t* create_section();

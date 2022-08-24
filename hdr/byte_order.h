@@ -4,9 +4,9 @@
 #include "./stdtypes.h"
 
 typedef enum{
-    LITTLEENDIAN = 0,
-    BIGENDIAN = 1,
-    UNHANDLE = 2
+  LITTLEENDIAN = 0,
+  BIGENDIAN = 1,
+  UNHANDLE = 2
 } ENDIANNESS;
 extern const char8* const NAME_ENDIANNESS[];
 extern ENDIANNESS check_endianness(void);

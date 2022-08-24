@@ -131,4 +131,4 @@ void* fork_server_channel(void* ptr){
     if(retrans_size != 0){ free(retrans_array); }
     pthread_exit(0);
     return NULL;
-};
+}

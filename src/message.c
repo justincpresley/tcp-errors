@@ -1,7 +1,5 @@
 #include "../hdr/message.h"
 #include "../hdr/byte_order.h"
-#include "../hdr/byte_help.h"
-#include "../hdr/parity.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,34 +7,6 @@
 
 const char8* const NAME_CHANNEL_TYPE[] = {[DATA]="Data", [CONTROL]="Control"};
 const char8* const NAME_DATA_TYPE[] = {[SYN]="Synchronize",[ACK]="Acknowledge",[RTS]="Retransmission",[FIN]="Finish"};
-
-uint32 calculate_header_length(){
-    //uint64 sendID       //uint64 recvID      //uint32 msgID
-    //uint8 chanType      //uint8 dataType
-    //uint32 totalLength  //uint32 bodyLength  //uint32 contentLength
-    //uint32 parityLength
-    //uint64 startByte    //uint64 endByte
-    // uint64 * 4  +  uint32 * 5  +  uint8 * 2
-    return ( (sizeof(uint64)*4) + (sizeof(uint32)*5) + (sizeof(uint8)*2) );
-}
-uint32 calculate_trailer_length(){
-    //uint64 sendID        //uint64 recvID    //uint32 msgID
-    //uint32 totalLength   //uint64 crc
-    // uint64 * 3  +  uint32 * 2
-    return ( (sizeof(uint64)*3) + (sizeof(uint32)*2) );
-}
-uint32 calculate_parity_length(uint32 bufflen){
-    return compute_vparity_length() + compute_hparity_length(bufflen);
-}
-uint32 calculate_body_length(uint32 clen){
-    uint32 buffContentSize = compute_buff_length(clen, BUFFER_CHUNK_SIZE);
-    uint32 plen = calculate_parity_length(buffContentSize);
-    uint32 buffParitySize = compute_buff_length(plen, BUFFER_CHUNK_SIZE);
-    return buffContentSize + buffParitySize;
-}
-uint32 calculate_total_length(uint32 clen){
-    return calculate_header_length() + calculate_body_length(clen) + calculate_trailer_length();
-}
 
 void free_msg(MSG* src){
     free(src->body->content);
@@ -58,9 +28,9 @@ MSG* form_msg(uint64 sID, uint64 rID, uint8 chant, uint8 datat, uint64 start, ui
     m->head->dataType = datat;
     m->head->msgID = (uint32)generate_random_uint(0, 4294967295);
     m->head->contentLength = clen;
-    m->head->parityLength = calculate_parity_length(compute_buff_length(clen, BUFFER_CHUNK_SIZE));
-    m->head->bodyLength = calculate_body_length(clen);
-    m->head->totalLength = calculate_total_length(clen);
+    m->head->parityLength = (uint32)calculate_parity_length(compute_buff_length(clen, BUFFER_CHUNK_SIZE));
+    m->head->bodyLength = (uint32)calculate_body_length(clen);
+    m->head->totalLength = (uint32)calculate_total_length(clen);
     m->head->startByte = start;
     m->head->endByte = end;
     m->body->content = copy_void(content, clen);
@@ -76,44 +46,44 @@ MSG* form_msg(uint64 sID, uint64 rID, uint8 chant, uint8 datat, uint64 start, ui
     return m;
 }
 void header_bytes_from_msg(MSG* src, uchar8** dst, uint64* len){
-    uint32 maxlen = calculate_header_length();
+    uint32 maxlen = (uint32)calculate_header_length();
     uint32 currlen = 0;
     uchar8* bytes = malloc(maxlen);
     for(uint32 i=0; i<maxlen; i++){bytes[i] = 0;}
     uint8 t8; uint32 t32; uint64 t64;
     t64 = hton64(src->head->sendID);
     memcpy(bytes+currlen, &t64, sizeof(uint64));
-    currlen += sizeof(uint64);
+    currlen += (uint32)sizeof(uint64);
     t64 = hton64(src->head->recvID);
     memcpy(bytes+currlen, &t64, sizeof(uint64));
-    currlen += sizeof(uint64);
+    currlen += (uint32)sizeof(uint64);
     t32 = hton32(src->head->msgID);
     memcpy(bytes+currlen, &t32, sizeof(uint32));
-    currlen += sizeof(uint32);
+    currlen += (uint32)sizeof(uint32);
     t8 = hton8(src->head->chanType);
     memcpy(bytes+currlen, &t8, sizeof(uint8));
-    currlen += sizeof(uint8);
+    currlen += (uint32)sizeof(uint8);
     t8 = hton8(src->head->dataType);
     memcpy(bytes+currlen, &t8, sizeof(uint8));
-    currlen += sizeof(uint8);
+    currlen += (uint32)sizeof(uint8);
     t32 = hton32(src->head->totalLength);
     memcpy(bytes+currlen, &t32, sizeof(uint32));
-    currlen += sizeof(uint32);
+    currlen += (uint32)sizeof(uint32);
     t32 = hton32(src->head->bodyLength);
     memcpy(bytes+currlen, &t32, sizeof(uint32));
-    currlen += sizeof(uint32);
+    currlen += (uint32)sizeof(uint32);
     t32 = hton32(src->head->contentLength);
     memcpy(bytes+currlen, &t32, sizeof(uint32));
-    currlen += sizeof(uint32);
+    currlen += (uint32)sizeof(uint32);
     t32 = hton32(src->head->parityLength);
     memcpy(bytes+currlen, &t32, sizeof(uint32));
-    currlen += sizeof(uint32);
+    currlen += (uint32)sizeof(uint32);
     t64 = hton64(src->head->startByte);
     memcpy(bytes+currlen, &t64, sizeof(uint64));
-    currlen += sizeof(uint64);
+    currlen += (uint32)sizeof(uint64);
     t64 = hton64(src->head->endByte);
     memcpy(bytes+currlen, &t64, sizeof(uint64));
-    currlen += sizeof(uint64);
+    currlen += (uint32)sizeof(uint64);
     *dst = bytes;
     *len = maxlen;
 }
