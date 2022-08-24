@@ -18,6 +18,7 @@ this project. Everything has both a header (hdr) file and a source (src) file un
 * 'message': the message structure, a unit to be sent/receive
     - 'socket_msg_help': functions to help sent and receive messages
 * 'conn_chan': handling and storing connections vs channels
+* 'section': helpful in deciding what byte ranges are missing
 
 # Driver Helpers
 * 'server_help': a module that helps the driver server be more simplistic and structured
